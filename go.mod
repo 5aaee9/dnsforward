@@ -1,6 +1,6 @@
 module github.com/5aaee9/dnsforward
 
-go 1.22.5
+go 1.22.3
 
 require (
 	github.com/miekg/dns v1.1.62 // indirect

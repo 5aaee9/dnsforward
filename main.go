@@ -31,10 +31,10 @@ func appendEdns0Subnet(msg *dns.Msg, addr net.IP) {
 	}
 	if addr.To4() == nil {
 		e.Family = 2 // IP6
-		e.SourceNetmask = net.IPv6len * 8
+		e.SourceNetmask = maskIPv6Length
 	} else {
 		e.Family = 1 // IP4
-		e.SourceNetmask = net.IPv4len * 8
+		e.SourceNetmask = maskIPv6Length
 	}
 	o.Option = append(o.Option, e)
 	if newOpt {
@@ -50,9 +50,10 @@ func main() {
 	client := &dns.Client{}
 
 	handler := dns.HandlerFunc(func(w dns.ResponseWriter, r *dns.Msg) {
-		remoteAddrPort := netip.MustParseAddrPort(w.RemoteAddr().String())
+		remoteAddrPort := clientSubNetMask(netip.MustParseAddrPort(w.RemoteAddr().String()).Addr())
 		forwardMessage := r.Copy()
-		appendEdns0Subnet(forwardMessage, net.UDPAddrFromAddrPort(remoteAddrPort).IP)
+
+		appendEdns0Subnet(forwardMessage, net.ParseIP(remoteAddrPort.String()))
 
 		res, _, err := client.Exchange(forwardMessage, *upstream)
 		if err != nil {
