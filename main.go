@@ -34,7 +34,7 @@ func appendEdns0Subnet(msg *dns.Msg, addr net.IP) {
 		e.SourceNetmask = maskIPv6Length
 	} else {
 		e.Family = 1 // IP4
-		e.SourceNetmask = maskIPv6Length
+		e.SourceNetmask = maskIPv4Length
 	}
 	o.Option = append(o.Option, e)
 	if newOpt {
